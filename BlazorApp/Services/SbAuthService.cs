@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
-using Radzen.Blazor;
 using Supabase.Gotrue;
 using Client = Supabase.Client;
 
