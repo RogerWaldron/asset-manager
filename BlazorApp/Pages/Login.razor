@@ -1,0 +1,32 @@
+﻿@page "/login"
+
+<RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
+    <RadzenTemplateForm Data=@("LoginWithDefaultValues")>
+        <RadzenLogin AllowRegister="true" AllowResetPassword="true" Username=@userName Password=@password
+                    AllowRememberMe="true" RememberMe="@rememberMe"
+                    Login=@(args => OnLogin(args, "Login with default values"))
+                    ResetPassword=@(args => OnResetPassword(args, "Reset password request"))
+                    Register=@(args => OnRegister("Register with default values")) />
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+    string userName = "demo@user.com";
+    string password = "demoUser";
+    bool rememberMe = true;
+    
+    void OnLogin(LoginArgs args, string name)
+    {
+        // console.Log($"{name} -> Username: {args.Username}, password: {args.Password}, remember me: {args.RememberMe}");
+    }
+
+    void OnRegister(string name)
+    {
+        // console.Log($"{name} -> Register");
+    }
+
+    void OnResetPassword(string value, string name)
+    {
+        // console.Log($"{name} -> ResetPassword for user: {value}");
+    }
+}
