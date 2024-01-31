@@ -1,10 +1,18 @@
 ﻿@page "/dashboard"
+@inject SbAuthService Auth
+@inject NavigationManager Nav
 
 <PageTitle>Dashboard</PageTitle>
 
-
+<RadzenButton Click=@(_ => OnLogout()) Text="Logout" />
 
 
 
 @code {
+
+    private async void OnLogout()
+    {
+        await Auth.Logout();
+        Nav.NavigateTo("/");
+    }
 }
