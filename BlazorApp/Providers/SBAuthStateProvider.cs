@@ -12,7 +12,7 @@ public class SbAuthStateProvider : AuthenticationStateProvider
     private readonly ILogger<SbAuthStateProvider> _logger;
     private readonly Client _client;
 
-    SbAuthStateProvider(ILocalStorageService localStorage, ILogger<SbAuthStateProvider> logger, Supabase.Client client)
+    public SbAuthStateProvider(ILocalStorageService localStorage, ILogger<SbAuthStateProvider> logger, Supabase.Client client)
     {
         _localStorage = localStorage;
         _logger = logger;

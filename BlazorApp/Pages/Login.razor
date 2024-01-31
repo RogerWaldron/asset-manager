@@ -1,4 +1,6 @@
 ﻿@page "/login"
+@inject SbAuthService Auth
+@inject NavigationManager Nav 
 
 <RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
     <RadzenTemplateForm Data=@("LoginWithDefaultValues")>
@@ -15,9 +17,12 @@
     string password = "demoUser";
     bool rememberMe = true;
     
-    void OnLogin(LoginArgs args, string name)
+    private async void OnLogin(LoginArgs args, string name)
     {
-        // console.Log($"{name} -> Username: {args.Username}, password: {args.Password}, remember me: {args.RememberMe}");
+        if (string.IsNullOrEmpty(args.Username) || string.IsNullOrEmpty(args.Password)) return;
+
+        await Auth.Login(args.Username, args.Password);
+        Nav.NavigateTo($"/dashboard");
     }
 
     void OnRegister(string name)
