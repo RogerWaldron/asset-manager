@@ -4,11 +4,11 @@
 
 <RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
     <RadzenTemplateForm Data=@("LoginWithDefaultValues")>
-        <RadzenLogin AllowRegister="true" AllowResetPassword="true" Username=@userName Password=@password
+        <RadzenLogin AllowRegister="false" AllowResetPassword="true" Username=@userName Password=@password
                     AllowRememberMe="true" RememberMe="@rememberMe"
                     Login=@(args => OnLogin(args, "Login with default values"))
-                    ResetPassword=@(args => OnResetPassword(args, "Reset password request"))
-                    Register=@(args => OnRegister("Register with default values")) />
+                    ResetPassword=@(args => OnResetPassword(args))
+                    />
     </RadzenTemplateForm>
 </RadzenCard>
 
@@ -25,13 +25,8 @@
         Nav.NavigateTo($"/dashboard");
     }
 
-    void OnRegister(string name)
+    void OnResetPassword(string userName)
     {
-        // console.Log($"{name} -> Register");
-    }
-
-    void OnResetPassword(string value, string name)
-    {
-        // console.Log($"{name} -> ResetPassword for user: {value}");
+        // await Auth.
     }
 }
