@@ -41,5 +41,6 @@ builder.Services.AddScoped<Supabase.Client>(
 );
 
 builder.Services.AddScoped<SbAuthService>();
+builder.Services.AddScoped<SbStorageService>();
 
 await builder.Build().RunAsync();
