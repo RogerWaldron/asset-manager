@@ -5,6 +5,7 @@ using BlazorApp.Providers;
 using BlazorApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
+using Radzen;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -42,5 +43,6 @@ builder.Services.AddScoped<Supabase.Client>(
 
 builder.Services.AddScoped<SbAuthService>();
 builder.Services.AddScoped<SbStorageService>();
+builder.Services.AddScoped<NotificationService>();
 
 await builder.Build().RunAsync();
