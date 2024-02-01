@@ -1,15 +1,16 @@
 ﻿@inherits LayoutComponentBase
 <RadzenLayout Style="grid-template-columns: auto 1fr auto; grid-template-areas: 'rz-header rz-header rz-header' 'rz-sidebar rz-body rz-right-sidebar'">
+    <RadzenNotification />
     <RadzenHeader>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenSidebarToggle Click="@(() => leftSidebarExpanded = !leftSidebarExpanded)" />
-            <RadzenLabel Text="Header" />
+            <RadzenSidebarToggle Click="@(() => leftSidebarExpanded = !leftSidebarExpanded)"/>
+            <RadzenLabel Text="Header"/>
         </RadzenStack>
     </RadzenHeader>
     <RadzenSidebar @bind-Expanded="@leftSidebarExpanded">
         <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Icon="home" />
-            <RadzenPanelMenuItem Text="Users" Icon="account_box" />
+            <RadzenPanelMenuItem Text="Home" Icon="home"/>
+            <RadzenPanelMenuItem Text="Users" Icon="account_box"/>
         </RadzenPanelMenu>
         <div class="rz-p-4">
             Left Sidebar
