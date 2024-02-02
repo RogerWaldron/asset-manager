@@ -6,61 +6,70 @@ using Supabase;
 
 namespace BlazorApp.Providers;
 
-public class SbAuthStateProvider : AuthenticationStateProvider
+public class SbAuthStateProvider : AuthenticationStateProvider, IDisposable
 {
-    private readonly ILocalStorageService _localStorage;
     private readonly ILogger<SbAuthStateProvider> _logger;
-    private readonly Client _client;
+    private readonly Supabase.Client _client;
+    private AuthenticationState AnonymousState => new(new ClaimsPrinciple(new ClaimsIdentity()));
 
-    public SbAuthStateProvider(ILocalStorageService localStorage, ILogger<SbAuthStateProvider> logger, Supabase.Client client)
+    public SbAuthStateProvider(ILogger<SbAuthStateProvider> logger, Supabase.Client client)
     {
-        _localStorage = localStorage;
         _logger = logger;
         _client = client;
+        _client.Auth.AddStateChangedListener(SupabaseAuthStateChanged);
     }
 
+    public void Dispose()
+    {
+        _client.Auth.RemoveStateChangedListener(SupabaseAuthStateChanged);
+    }
+
+    private void SbAuthStateChanged(
+        IGotrueClient<User, Session> sender, 
+        Constants.AuthState state)
+    {
+        switch (state)
+        {
+            case Constants.AuthState.SignedIn:
+                NotifyAuthenticationStateChanged(Task.FromResult(AuthenticatedState));
+                break;
+            case Constants.AuthState.SignedOut:
+                NotifyAuthenticationStateChanged(Task.FromResult(AnonymousState));
+                break;
+        }   
+    }
+
+    private AuthenticationState AuthenticatedState
+    {
+        get
+        {
+            var user = _client.Auth.CurrentUser;
+
+            if (user is null)
+                return AnonymousState;
+
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Email, user.Email as string),
+                new(ClaimTypes.Role, user.Role!),
+                new(ClaimTypes.Authentication, "supabase")
+            };
+
+            return new AuthenticationState(new ClaimsPrinciple(new ClaimsIdentity(claims, "supabase")));
+        }    
+    }
+    
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         _logger.LogInformation("GetAuthenticationState");
 
-        await _client.InitializeAsync();
-
-        var identity = new ClaimsIdentity();
-
-        if (!string.IsNullOrEmpty(_client?.Auth?.CurrentSession?.AccessToken))
+        if (_client.Auth.CurrentUser is null)
         {
-            identity = new ClaimsIdentity(ParseClaimsFromJWT(_client.Auth.CurrentSession.AccessToken), "jwt");
+            _logger.LogInformation("GetAuthenticationState returned Anonymous because no authenticaed user was found");
+            
+            return Task.FromResult(AnonymousState);
         }
-
-        var user = new ClaimsPrincipal(identity);
-        var state = new AuthenticationState(user);
         
-        NotifyAuthenticationStateChanged(Task.FromResult(state));
-
-        return state;
-    }
-
-    private static IEnumerable<Claim>? ParseClaimsFromJWT(string jwt)
-    {
-        var payload = jwt.Split('.')[1];
-        byte[] jsonBytes = ParseBase64WithoutPadding(payload);
-        var kvPairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-
-        return kvPairs.Select(kv => new Claim(kv.Key, kv.Value.ToString()));
-    }
-
-    private static byte[] ParseBase64WithoutPadding(string base64)
-    {
-        switch (base64.Length % 4)
-        {
-            case 2: 
-                base64 += "==";
-                break;
-            case 3:
-                base64 += "=";
-                break;
-        }
-
-        return Convert.FromBase64String(base64);
+        return Task.FromResult(AuthenticatedState)
     }
 }
