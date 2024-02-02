@@ -19,8 +19,15 @@ public class SbSessionHandler : IGotrueSessionPersistence<Session>
 
     public void SaveSession(Session session)
     {
-        _logger.LogInformation("Session Save");
-        _localStorage.SetItem(SessionKey, session);
+        try
+        {
+            var serialized = JsonConvert.SerializeObject(session);
+            _localStorage.SetItem(SessionKey, session);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Exception - Session Save");
+        }
     }
 
     public void DestroySession()
@@ -31,9 +38,20 @@ public class SbSessionHandler : IGotrueSessionPersistence<Session>
 
     public Session? LoadSession()
     {
-        _logger.LogInformation("Session Load");
-        var session = _localStorage.GetItem<Session>(SessionKey);
+        try
+        {
+            var session = _localStorage.GetItem<Session>(SessionKey);
 
-        return session?.ExpiresAt() <= DateTime.Now ? null : session;
+            if (string.IsNullOrEmpty(session))
+                return null;
+            
+            return session.ExpiresAt() <= DateTime.Now ? null : session;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Exception - Session Load");
+            return null;
+        }
+
     }
 }
