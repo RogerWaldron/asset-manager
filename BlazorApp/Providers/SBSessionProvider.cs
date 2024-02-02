@@ -4,7 +4,7 @@ using Supabase.Gotrue.Interfaces;
 
 namespace BlazorApp.Providers;
 
-public class SbSessionHandler : IGotrueSessionPersistence<Session>
+public class SbSessionProvider : IGotrueSessionPersistence<Session>
 {
     private readonly ILocalStorageService _localStorage;
     private readonly ILogger<SbSessionHandler> _logger;

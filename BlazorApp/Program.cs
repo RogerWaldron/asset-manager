@@ -33,9 +33,9 @@ builder.Services.AddScoped<Supabase.Client>(
         {
             AutoRefreshToken = true,
             AutoConnectRealtime = true,
-            SessionHandler = new SbSessionHandler(
+            SessionHandler = new SbSessionProvider(
                 provider.GetRequiredService<ILocalStorageService>(),
-                provider.GetRequiredService<ILogger<SbSessionHandler>>()
+                provider.GetRequiredService<ILogger<SbSessionProvider>>()
             )
         }
     )
