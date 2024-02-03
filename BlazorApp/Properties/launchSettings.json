@@ -16,7 +16,9 @@
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
       "applicationUrl": "http://localhost:5270",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SUPABASE_URL": "https://oudgzfjtwfrawcfyzhcx.supabase.co",
+        "SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91ZGd6Zmp0d2ZyYXdjZnl6aGN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY1Njk3MzksImV4cCI6MjAyMjE0NTczOX0.YhMY8_UfUfG8ArhP7GzwMUeY4i6zj4GJn-R5g6RYtHk"
       }
     },
     "https": {
