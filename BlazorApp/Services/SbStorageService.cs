@@ -1,15 +1,14 @@
 using System.Diagnostics;
-using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 using Supabase.Storage;
 using Supabase.Storage.Interfaces;
-using Client = Supabase.Client;
 
 namespace BlazorApp.Services;
 
 public class SbStorageService
 {
-    private readonly IStorageClient<Bucket, FileObject?> _storage;
-    private readonly Client _client;
+    private readonly IStorageClient<Supabase.Storage.Bucket, Supabase.Storage.FileObject> _storage;
+    private readonly Supabase.Client _client;
     private readonly ILogger<SbStorageService> _logger;
 
     public SbStorageService(
@@ -29,7 +28,7 @@ public class SbStorageService
         var dataAsBytes = await StreamToBytesAsync(streamData);
 
         var fileExtension = fileName.Split(".").Last();
-        var userId = _client?.Auth?.CurrentUser?.Id;
+        var userId = _client.Auth.CurrentUser?.Id;
 
         var saveName = $"{userId}-" + Guid.NewGuid();
         saveName = saveName
@@ -41,23 +40,33 @@ public class SbStorageService
         return await bucket.Upload(dataAsBytes, saveName);
     }
 
-    public async Task<List<FileObject?>?> GetFilesFromBucket(string bucketName)
+    public async Task<List<FileObject>?> GetFilesFromBucket(string bucketName)
     {
-        return await _storage.From(bucketName).List();
+        var bucket = _storage.From(bucketName);
+
+        if (bucket is null)
+            return Enumerable.Empty<FileObject>().ToList();
+            // heap is bypassed and there is nothing to garbage collect.
+
+        return await bucket.List();
     }
 
     public async Task<byte[]> DownloadFile(string bucketName, string fileName)
     {
         var bucket = _storage.From(bucketName);
 
+        if (bucket is null)
+            return Array.Empty<byte>();
+            // heap is bypassed and there is nothing to garbage collect.
+
         return await bucket.Download(fileName, (_, f) => Debug.WriteLine($"Download Progress: {f}%"));
     }
 
-    public async Task<FileObject?>? DeleteFile(string bucketName, string fileName)
+    public async Task<List<FileObject>?> DeleteFiles(string bucketName, List<string> pathsList)
     {
         var bucket = _storage.From(bucketName);
         
-        return await bucket.Remove(fileName);
+        return await bucket.Remove(pathsList);
     }
 
     private async Task<byte[]> StreamToBytesAsync(Stream streamData)
