@@ -1,8 +1,7 @@
 using System.Security.Claims;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.JSInterop;
-using Supabase;
+using Supabase.Gotrue;
+using Supabase.Gotrue.Interfaces;
 
 namespace BlazorApp.Providers;
 
@@ -10,18 +9,18 @@ public class SbAuthStateProvider : AuthenticationStateProvider, IDisposable
 {
     private readonly ILogger<SbAuthStateProvider> _logger;
     private readonly Supabase.Client _client;
-    private AuthenticationState AnonymousState => new(new ClaimsPrinciple(new ClaimsIdentity()));
+    private AuthenticationState AnonymousState => new(new ClaimsPrincipal(new ClaimsIdentity()));
 
     public SbAuthStateProvider(ILogger<SbAuthStateProvider> logger, Supabase.Client client)
     {
         _logger = logger;
         _client = client;
-        _client.Auth.AddStateChangedListener(SupabaseAuthStateChanged);
+        _client.Auth.AddStateChangedListener(SbAuthStateChanged);
     }
 
     public void Dispose()
     {
-        _client.Auth.RemoveStateChangedListener(SupabaseAuthStateChanged);
+        _client.Auth.RemoveStateChangedListener(SbAuthStateChanged);
     }
 
     private void SbAuthStateChanged(
@@ -50,16 +49,16 @@ public class SbAuthStateProvider : AuthenticationStateProvider, IDisposable
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Email, user.Email as string),
+                new(ClaimTypes.Email, user.Email!),
                 new(ClaimTypes.Role, user.Role!),
                 new(ClaimTypes.Authentication, "supabase")
             };
 
-            return new AuthenticationState(new ClaimsPrinciple(new ClaimsIdentity(claims, "supabase")));
+            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "supabase")));
         }    
     }
     
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         _logger.LogInformation("GetAuthenticationState");
 
@@ -70,6 +69,6 @@ public class SbAuthStateProvider : AuthenticationStateProvider, IDisposable
             return Task.FromResult(AnonymousState);
         }
         
-        return Task.FromResult(AuthenticatedState)
+        return Task.FromResult(AuthenticatedState);
     }
 }
