@@ -1,6 +1,52 @@
-@page "/FileUpload"
+@page "/fileupload"
+@inject NotificationService Toast
+@inject SbStorageService StorageService
+
 <h3>FileUpload</h3>
 
+<RadzenCard>
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Upload Complete event</RadzenText>
+        <RadzenButton Text="Get Files" Click=@OnGetFiles />
+</RadzenCard>
+
+<RadzenCard>
+    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Upload Complete event</RadzenText>
+    <RadzenUpload Url="upload/single" Complete=@OnComplete class="w-100" InputAttributes="@(new Dictionary<string, object>() { { "aria-label", "select file" } })" />
+</RadzenCard>
+
+@* @if (FileObjects?.Count <= 1) { *@
+@*     <RadzenCard> *@
+@*         <RadzenText>There is no items in this table</RadzenText> *@
+@*     </RadzenCard> *@
+@* }  *@
+@* else  *@
+@* { *@
+@*     @foreach (var row in FileObjects) *@
+@*     { *@
+@*         if (row.Name != ".emptyFolderPlaceholder") *@
+@*         { *@
+@*             <RadzenText>@row.Name</RadzenText> *@
+@*         } *@
+@*     } *@
+@* } *@
+
 @code {
-    
+    async void OnGetFiles()
+    {
+        var objects = await StorageService.GetFilesFromBucket("userfiles");
+        
+        Console.WriteLine($"Found {objects?.Count.ToString()} files");
+    }
+
+    void OnComplete(UploadCompleteEventArgs args)
+    {
+        Toast.Notify(new NotificationMessage
+        {
+            Summary = "File Successfully uploaded",
+            Duration = 4000,
+            Severity = NotificationSeverity.Success
+        });
+
+        Console.WriteLine($"Server response: {args.RawResponse}");
+    }
 }
