@@ -1,4 +1,5 @@
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Interfaces;
 
@@ -7,11 +8,11 @@ namespace BlazorApp.Providers;
 public class SbSessionProvider : IGotrueSessionPersistence<Session>
 {
     private readonly ILocalStorageService _localStorage;
-    private readonly ILogger<SbSessionHandler> _logger;
+    private readonly ILogger<SbSessionProvider> _logger;
     private const string SessionKey = "SUPABASE_SESSION";
 
 
-    public SbSessionHandler(ILocalStorageService localStorage, ILogger<SbSessionHandler> logger)
+    public SbSessionProvider(ILocalStorageService localStorage, ILogger<SbSessionProvider> logger)
     {
         _localStorage = localStorage;
         _logger = logger;
@@ -24,7 +25,7 @@ public class SbSessionProvider : IGotrueSessionPersistence<Session>
             var serialized = JsonConvert.SerializeObject(session);
             _localStorage.SetItem(SessionKey, session);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             _logger.LogError("Exception - Session Save");
         }
@@ -40,14 +41,16 @@ public class SbSessionProvider : IGotrueSessionPersistence<Session>
     {
         try
         {
-            var session = _localStorage.GetItem<Session>(SessionKey);
+            var json = _localStorage.GetItem<string>(SessionKey);
 
-            if (string.IsNullOrEmpty(session))
+            if (string.IsNullOrEmpty(json))
                 return null;
+
+            var session = JsonConvert.DeserializeObject<Session>(json);
             
-            return session.ExpiresAt() <= DateTime.Now ? null : session;
+            return session?.ExpiresAt() <= DateTime.Now ? null : session;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             _logger.LogError("Exception - Session Load");
             return null;
