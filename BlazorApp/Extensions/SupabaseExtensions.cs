@@ -1,5 +1,7 @@
 using BlazorApp.Interfaces;
+using BlazorApp.Providers;
 using BlazorApp.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Supabase;
 
 namespace BlazorApp.Extensions;
@@ -8,6 +10,12 @@ public static class SupabaseExtensions {
   public static void AddSupabaseServices(this IServiceCollection services) {
 
   // Register Supabase
+    services.AddScoped<AuthenticationStateProvider, SbAuthStateProvider>(
+      provider => new SbAuthStateProvider(
+        provider.GetRequiredService<ILogger<SbAuthStateProvider>>(),
+        provider.GetRequiredService<Supabase.Client>()
+      )
+    );
 
     try {
       var url = Environment.GetEnvironmentVariable("SUPABASE_URL") ?? "";
@@ -18,23 +26,20 @@ public static class SupabaseExtensions {
         AutoConnectRealtime = true,
         // SessionHandler = new SupabaseSessionProvider(),
       }; 
-      services.AddSingleton(provider => new Supabase.Client(url, key, options));
+      services.AddScoped<Supabase.Client>(provider => new Supabase.Client(url, key, options));
     }
     catch (Exception)
     {
       throw new Exception("Failed to read Supabase environment variables");
     }
-
-    // prov => new SbAuthStateProvider(
-    //     prov.GetRequiredService<ILogger<SbAuthStateProvider>>(),
-    //     prov.GetRequiredService<Supabase.Client>()
-    //     ));  
+    
     services.AddScoped<SbAuthService>();
     services.AddScoped<SbStorageService>();
     services.AddScoped<IAppStateService>(p => new AppStateService(p.GetRequiredService<Supabase.Client>()));
-  // Register postgrest cache provider, comes with Supabase
   
-  // services.AddScoped<IPostgrestCacheProvider, PostgrestCacheProvider>();
+    // Register postgrest cache provider, comes with Supabase
+  
+    services.AddScoped<IPostgrestCacheProvider, PostgrestCacheProvider>();
 
   }
 
