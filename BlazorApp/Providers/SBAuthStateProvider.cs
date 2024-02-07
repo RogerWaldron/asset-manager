@@ -9,6 +9,8 @@ public class SbAuthStateProvider : AuthenticationStateProvider, IDisposable
 {
     private readonly ILogger<SbAuthStateProvider> _logger;
     private readonly Supabase.Client _client;
+
+
     private AuthenticationState AnonymousState => new(new ClaimsPrincipal(new ClaimsIdentity()));
 
     public SbAuthStateProvider(ILogger<SbAuthStateProvider> logger, Supabase.Client client)
@@ -61,6 +63,8 @@ public class SbAuthStateProvider : AuthenticationStateProvider, IDisposable
     public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         _logger.LogInformation("GetAuthenticationState");
+
+        _client.Auth.LoadSession();
 
         if (_client.Auth.CurrentUser is null)
         {
