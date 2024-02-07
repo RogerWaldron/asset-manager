@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using Supabase.Gotrue;
-using Client = Supabase.Client;
 
 namespace BlazorApp.Services;
 
 public class SbAuthService
 {
-    private readonly Client _client;
+    private readonly Supabase.Client _client;
     private readonly AuthenticationStateProvider _sbAuthStateProvider;
     private readonly ILogger<SbAuthService> _logger;
     private readonly ILocalStorageService _localStorage;
@@ -29,15 +28,15 @@ public class SbAuthService
     {
         try
         {
-            _logger.LogInformation("AuthService - Logout");
             
             await _client.Auth.SignOut();
+            _logger.LogInformation("AuthService - Logout");
             _localStorage.RemoveItem("token");
             await _sbAuthStateProvider.GetAuthenticationStateAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, ex.Message.ToString());
+            _logger.LogDebug(ex, ex.Message);
         }
     }
 
@@ -45,13 +44,13 @@ public class SbAuthService
     {
         try
         {
-            _logger.LogInformation("AuthService - Login");
             var user = await _client.Auth.SignIn(email, pwd);
+            _logger.LogInformation("AuthService - Login Success");
             await _sbAuthStateProvider.GetAuthenticationStateAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, ex.Message.ToString());
+            _logger.LogDebug(ex, ex.Message);
         }
     }
 
