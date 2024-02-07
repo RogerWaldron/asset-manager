@@ -16,11 +16,6 @@ builder.Services.AddSupabaseServices();
 // Radzen services
 builder.Services.AddScoped<NotificationService>();
 
-var app = builder.Build();
+var host = builder.Build();
 
-// Init Supabase
-// var supabase = app.Services.GetRequiredService<Client>();
-// await supabase.InitializeAsync();
-// supabase.Auth.LoadSession();
-
-await app.RunAsync();
+await host.RunAsync();
