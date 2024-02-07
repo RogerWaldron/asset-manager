@@ -11,8 +11,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddLocalStorageServices();
 
-builder.Services.AddAuthorizationCore();
 builder.Services.AddSupabaseServices();
+builder.Services.AddAuthorizationCore();
+
 // Radzen services
 builder.Services.AddScoped<NotificationService>();
 
