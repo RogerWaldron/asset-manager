@@ -1,9 +1,14 @@
 # asset-manager
 
+Abandoned due to debugger not working...
+
+kept as reference
+
 ## Current Project State
+
 - [ ] Light Mode / Dark Mode
 - [ ] Authentication & Authorization
-  - [ ] Sign Up 
+  - [ ] Sign Up
   - [ ] Sign In redirects to dashboard
   - [ ] Sign Out redirects to home page
 - [ ] Database
@@ -15,14 +20,15 @@
 - [ ] UI
   - [ ] Login
   - [ ] Dashboard
-  - [ ] Google Maps 
-  - [ ] Locations 
+  - [ ] Google Maps
+  - [ ] Locations
   - [ ] Notifications
 - [ ] Tests
   - [ ] bUnit
-  -  [ ] Cypress
+  - [ ] Cypress
 
 ## Tech Stack
+
 - Microsoft Blazor 8
 - Radzen UI Components
 - Supabase

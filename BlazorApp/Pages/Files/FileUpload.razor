@@ -31,6 +31,16 @@
 @* } *@
 
 @code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var bucketName = "userfiles";
+        if (!string.IsNullOrEmpty(bucketName) && !(_supabase is null))
+        {
+             FileObjects = await _supabase.From("userfiles").List() ?? new List<Supabase.Storage.FileObject>();
+        }
+    }
+
     async void OnGetFiles()
     {
         var objects = await StorageService.GetFilesFromBucket("userfiles");

@@ -1,23 +1,32 @@
 using BlazorApp.Services;
+using Microsoft.AspNetCore.Components;
+using Supabase.Storage.Interfaces;
 
 namespace BlazorApp.Pages.Files;
 
 public partial class FileUpload
 {
+    // [Inject]
+    // private IStorageClient<Supabase.Storage.Bucket, Supabase.Storage.FileObject>? _storageClient { get; set; }
+
+    // [Inject] 
+    // private SbStorageService? _storageService { get; set; }
+    [Inject]
+    private  IStorageClient<Supabase.Storage.Bucket, Supabase.Storage.FileObject>? _supabase { get; set; }
+
     public List<Supabase.Storage.FileObject> FileObjects = new List<Supabase.Storage.FileObject>().ToList();
     static long _MaxFileSizeInMb = 1024 * 1024 * 15;
     
     
-    protected override async Task OnInitializedAsync()
-    {
-        await GetFilesFromBucket();
-    }
+    // protected override async void OnInitializedAsync()
+    // {
+    //     var bucketName = "userfiles";
+    //     if (!string.IsNullOrEmpty(bucketName) && !(_supabase is null))
+    //     {
+    //          FileObjects = await _supabase.From("userfiles").List() ?? new List<Supabase.Storage.FileObject>();
+    //     }
+    // }
 
-    private async Task GetFilesFromBucket()
-    {
-        FileObjects = await SbStorageService.GetFilesFromBucket("userfiles") ??= Enumerable.Empty<Supabase.Storage.FileObject>().ToList();
-    }
-    
     // private async Task ListBuckets()
     // {
     //     // FileObjects = await Supabase.Storage.Bucket.
